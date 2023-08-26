@@ -4,19 +4,37 @@
 //
 //  Created by Brandon Johns on 8/25/23.
 //
+// some View: is an opaque return type. it means sone specfic view but doesnt matter which one.
 
 import SwiftUI
 
 struct ContentView: View {
+    let menu = Bundle.main.decode([MenuSection].self, from: "menu.json")
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationStack {
+            List {
+                ForEach(menu) { section in
+                    Section(section.name) {
+                        ForEach(section.items){ item in
+                            // makes NaviLink hashable so its less work to load each item
+                            NavigationLink(value: item) {
+                                ItemRow(item: item)
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationDestination(for: MenuItem.self) { item in
+                //where to go when some item is triggered
+                ItemDetail(item: item)
+            }
+            .navigationTitle("Menu")
+            .listStyle(.grouped)
+
         }
-        .padding()
     }
+    //end ContentView
 }
 
 struct ContentView_Previews: PreviewProvider {
